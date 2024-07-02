@@ -1,11 +1,16 @@
 import { Request, Response } from "express";
 import Todo, { ITodo, TodoPriority } from '../models/todo';
 import { createTodoRequest, updatedTodoRequest } from "../interfaces/requests";
+import _ from 'lodash';
+
 
 export const getTodos = async (req: Request, res: Response) => {
   try {
     const todos = await Todo.find();
-    res.json(todos);
+    //using lodash map:
+    const todoTitles = _.map(todos, 'title');
+    const completedTodos = _.filter(todos, { completed: true });
+    res.status(200).json({ todos: todos, todoTitles: todoTitles, completedTodos: completedTodos });
   } catch (error) {
     const err = error as Error;
     res.status(500).json({ message: err.message });
