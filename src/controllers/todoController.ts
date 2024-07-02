@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import Todo, { ITodo, TodoPriority } from '../models/todo';
+import { createTodoRequest, updatedTodoRequest } from "../interfaces/requests";
 
 export const getTodos = async (req: Request, res: Response) => {
   try {
@@ -11,7 +12,9 @@ export const getTodos = async (req: Request, res: Response) => {
   }
 };
 
-export const createTodo = async (req: Request, res: Response) => {
+//GENERIC PARAMETERS OF REQUESTS: 
+// PARAMS, RES.BODY, REQ.BODY: 
+export const createTodo = async (req: Request<{}, {}, createTodoRequest>, res: Response) => {
   const { title, dueDate, priority } = req.body;
 
   try {
@@ -29,7 +32,8 @@ export const createTodo = async (req: Request, res: Response) => {
   }
 };
 
-export const updateTodo = async (req: Request, res: Response) => {
+//PARAMS: (ID: STRING) PASSING: 
+export const updateTodo = async (req: Request<{ id: string }, {}, updatedTodoRequest>, res: Response) => {
   const { title, completed, dueDate, priority } = req.body;
   try {
     const todo = await Todo.findById(req.params.id);
