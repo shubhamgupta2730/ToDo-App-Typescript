@@ -10,6 +10,7 @@ const todoSchema = new mongoose_1.Schema({
         type: Boolean,
         default: false,
     },
+    
 });
 const Todo = (0, mongoose_1.model)("Todo", todoSchema);
 exports.default = Todo;

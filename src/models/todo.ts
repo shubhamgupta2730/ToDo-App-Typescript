@@ -1,8 +1,15 @@
 import { Schema, model } from "mongoose";
 
-interface ITodo {
+export enum TodoPriority {
+  LOW = "LOW",
+  MEDIUM = "MEDIUM",
+  HIGH = "HIGH",
+}
+export interface ITodo extends Document {
   title: string;
   completed: boolean;
+  dueDate?: Date;
+  priority: TodoPriority;
 }
 
 const todoSchema = new Schema<ITodo>({
@@ -13,6 +20,15 @@ const todoSchema = new Schema<ITodo>({
   completed: {
     type: Boolean,
     default: false,
+  },
+  dueDate: {
+    type: Date,
+    required: false,
+  },
+  priority: {
+    type: String,
+    enum: TodoPriority,
+    default: TodoPriority.MEDIUM,
   },
 });
 
