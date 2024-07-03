@@ -9,6 +9,33 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 import Todo, { TodoPriority } from "../models/todo.js";
 import _ from "lodash";
+//using Set for removing duplicate documents from db;
+export const duplicateTodos = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const todos = yield Todo.find();
+        const seenTitles = new Set();
+        const duplicateIds = [];
+        todos.forEach((todo) => {
+            if (seenTitles.has(todo.title)) {
+                duplicateIds.push(todo._id.toString());
+            }
+            else {
+                seenTitles.add(todo.title);
+            }
+        });
+        if (duplicateIds.length > 0) {
+            yield Todo.deleteMany({ _id: { $in: duplicateIds } });
+            res.json({ message: `Removed ${duplicateIds.length} duplicate todos` });
+        }
+        else {
+            res.json({ message: "No duplicates found" });
+        }
+    }
+    catch (error) {
+        const err = error;
+        res.status(500).json({ message: err.message });
+    }
+});
 export const getTodos = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const todos = yield Todo.find();
