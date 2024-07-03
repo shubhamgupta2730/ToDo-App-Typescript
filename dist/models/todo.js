@@ -1,7 +1,11 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const mongoose_1 = require("mongoose");
-const todoSchema = new mongoose_1.Schema({
+import { Schema, model } from "mongoose";
+export var TodoPriority;
+(function (TodoPriority) {
+    TodoPriority["LOW"] = "LOW";
+    TodoPriority["MEDIUM"] = "MEDIUM";
+    TodoPriority["HIGH"] = "HIGH";
+})(TodoPriority || (TodoPriority = {}));
+const todoSchema = new Schema({
     title: {
         type: String,
         required: true,
@@ -10,7 +14,15 @@ const todoSchema = new mongoose_1.Schema({
         type: Boolean,
         default: false,
     },
-    
+    dueDate: {
+        type: Date,
+        required: false,
+    },
+    priority: {
+        type: String,
+        enum: TodoPriority,
+        default: TodoPriority.MEDIUM,
+    },
 });
-const Todo = (0, mongoose_1.model)("Todo", todoSchema);
-exports.default = Todo;
+const Todo = model("Todo", todoSchema);
+export default Todo;

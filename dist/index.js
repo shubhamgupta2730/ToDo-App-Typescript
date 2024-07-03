@@ -1,15 +1,13 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-const express_1 = __importDefault(require("express"));
-const db_1 = __importDefault(require("./config/db"));
-const app = (0, express_1.default)();
+import express from "express";
+import connectDB from "./config/db.js";
+import todoRoutes from "./routes/todoRoute.js";
+import logger from "./logger.js";
+const app = express();
 const PORT = 3000;
-(0, db_1.default)();
+connectDB();
 // Middleware
-app.use(express_1.default.json());
+app.use(express.json());
+app.use("/api", todoRoutes);
 app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
+    logger.info(`Server is running on http://localhost:${PORT}`);
 });

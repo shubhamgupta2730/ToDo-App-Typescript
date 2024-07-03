@@ -1,32 +1,41 @@
-import { Request, Response } from "express";
-import Todo, { ITodo, TodoPriority } from '../models/todo';
-import { createTodoRequest, updatedTodoRequest } from "../interfaces/requests";
-import _ from 'lodash';
-
+import type { Request, Response } from "express";
+import Todo, { TodoPriority } from "../models/todo.js";
+import type {
+  createTodoRequest,
+  updatedTodoRequest,
+} from "../interfaces/requests.js";
+import _ from "lodash";
 
 export const getTodos = async (req: Request, res: Response) => {
   try {
     const todos = await Todo.find();
     //using lodash map:
-    const todoTitles = _.map(todos, 'title');
+    const todoTitles = _.map(todos, "title");
     const completedTodos = _.filter(todos, { completed: true });
-    res.status(200).json({ todos: todos, todoTitles: todoTitles, completedTodos: completedTodos });
+    res.status(200).json({
+      todos: todos,
+      todoTitles: todoTitles,
+      completedTodos: completedTodos,
+    });
   } catch (error) {
     const err = error as Error;
     res.status(500).json({ message: err.message });
   }
 };
 
-//GENERIC PARAMETERS OF REQUESTS: 
-// PARAMS, RES.BODY, REQ.BODY: 
-export const createTodo = async (req: Request<{}, {}, createTodoRequest>, res: Response) => {
+//GENERIC PARAMETERS OF REQUESTS:
+// PARAMS, RES.BODY, REQ.BODY:
+export const createTodo = async (
+  req: Request<unknown, unknown, createTodoRequest>,
+  res: Response,
+) => {
   const { title, dueDate, priority } = req.body;
 
   try {
     const todo = new Todo({
       title,
       dueDate: dueDate ? new Date(dueDate) : undefined,
-      priority: priority? priority: TodoPriority.MEDIUM
+      priority: priority ? priority : TodoPriority.MEDIUM,
     });
 
     const newTodo = await todo.save();
@@ -37,8 +46,11 @@ export const createTodo = async (req: Request<{}, {}, createTodoRequest>, res: R
   }
 };
 
-//PARAMS: (ID: STRING) PASSING: 
-export const updateTodo = async (req: Request<{ id: string }, {}, updatedTodoRequest>, res: Response) => {
+//PARAMS: (ID: STRING) PASSING:
+export const updateTodo = async (
+  req: Request<{ id: string }, unknown, updatedTodoRequest>,
+  res: Response,
+) => {
   const { title, completed, dueDate, priority } = req.body;
   try {
     const todo = await Todo.findById(req.params.id);
@@ -52,7 +64,7 @@ export const updateTodo = async (req: Request<{ id: string }, {}, updatedTodoReq
 
     //ternary operator:
     todo.dueDate = dueDate ? new Date(dueDate) : todo.dueDate;
-    todo.priority = priority? priority: todo.priority
+    todo.priority = priority ? priority : todo.priority;
     const updatedTodo = await todo.save();
     res.json(updatedTodo);
   } catch (error) {
