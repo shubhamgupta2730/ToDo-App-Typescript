@@ -11,3 +11,4 @@ app.use("/api", todoRoutes);
 app.listen(PORT, () => {
     logger.info(`Server is running on http://localhost:${PORT}`);
 });
+//node dist/index.js

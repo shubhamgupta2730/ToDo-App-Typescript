@@ -6,6 +6,33 @@ import type {
 } from "../interfaces/requests.js";
 import _ from "lodash";
 
+//using Set for removing duplicate documents from db;
+export const duplicateTodos = async (req: Request, res: Response) => {
+  try {
+    const todos = await Todo.find();
+    const seenTitles = new Set<string>();
+    const duplicateIds: string[] = [];
+
+    todos.forEach((todo) => {
+      if (seenTitles.has(todo.title)) {
+        duplicateIds.push(todo._id.toString());
+      } else {
+        seenTitles.add(todo.title);
+      }
+    });
+
+    if (duplicateIds.length > 0) {
+      await Todo.deleteMany({ _id: { $in: duplicateIds } });
+      res.json({ message: `Removed ${duplicateIds.length} duplicate todos` });
+    } else {
+      res.json({ message: "No duplicates found" });
+    }
+  } catch (error) {
+    const err = error as Error;
+    res.status(500).json({ message: err.message });
+  }
+};
+
 export const getTodos = async (req: Request, res: Response) => {
   try {
     const todos = await Todo.find();
@@ -27,7 +54,7 @@ export const getTodos = async (req: Request, res: Response) => {
 // PARAMS, RES.BODY, REQ.BODY:
 export const createTodo = async (
   req: Request<unknown, unknown, createTodoRequest>,
-  res: Response,
+  res: Response
 ) => {
   const { title, dueDate, priority } = req.body;
 
@@ -49,7 +76,7 @@ export const createTodo = async (
 //PARAMS: (ID: STRING) PASSING:
 export const updateTodo = async (
   req: Request<{ id: string }, unknown, updatedTodoRequest>,
-  res: Response,
+  res: Response
 ) => {
   const { title, completed, dueDate, priority } = req.body;
   try {
